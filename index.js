@@ -13,7 +13,7 @@ const client = new Client ({
     ]
 });
 
-const TARGET_USERNAME = 'That1Dude'; // The username you want to listen to
+const TARGET_USERNAME = 'tvtyler65'; // The username you want to listen to
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);

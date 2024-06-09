@@ -29,7 +29,7 @@ client.on('ready', () => {
 
 client.on('voiceStateUpdate', (newState) => {
     // Check if the target user has joined a voice channel
-    if (newState.id === TARGET_USER_ID && newState.channel.id) {
+    if (newState.id === TARGET_USER_ID && newState.channelID) {
         if (daysMissed > 0) {
             // Send a message to the channel when daysMissed resets to 0
             const channel = client.channels.cache.get(CHANNEL_ID);

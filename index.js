@@ -13,7 +13,7 @@ const client = new Client({
     ]
 });
 
-const TARGET_USER_ID = '694018105701171210';
+const TARGET_USER_ID = '151778455300734976';
 const CHANNEL_ID = '1239347161242669136';
 let daysMissed = 0; 
 
@@ -27,13 +27,13 @@ client.on('ready', () => {
     // schedule.scheduleJob('* * * * *', checkUserActivity);
 });
 
-client.on('voiceStateUpdate', (oldState, newState) => {
+client.on('voiceStateUpdate', (newState) => {
     // Check if the target user has joined a voice channel
     if (newState.id === TARGET_USER_ID && newState.channelId) {
         if (daysMissed > 0) {
             // Send a message to the channel when daysMissed resets to 0
             const channel = client.channels.cache.get(CHANNEL_ID);
-            channel.send(`<@${newState.member.user.id}> is gaming with the homies. The counter has reset to 0 days.`);
+            channel.send(`<@${newState.member.user.id}> is testing the bot.`);
         }
         daysMissed = 0;
     }

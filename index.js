@@ -27,19 +27,26 @@ client.on('ready', () => {
     // schedule.scheduleJob('* * * * *', checkUserActivity);
 });
 
-client.on('voiceStateUpdate', (newState) => {
+client.on('voiceStateUpdate', async (oldState, newState) => {
     // Check if the target user has joined a voice channel
     if (newState.id === TARGET_USER_ID && newState.channelId) {
         if (daysMissed > 0) {
-            // Send a message to the channel when daysMissed resets to 0
-            const channel = client.channels.cache.get(CHANNEL_ID);
-            channel.send(`<@${newState.member.user.id}> is testing the bot.`);
+            try {
+                const channel = await client.channels.fetch(CHANNEL_ID);
+                if (channel) {
+                    channel.send(`<@${newState.member.user.id}> is testing the bot.`);
+                } else {
+                    console.error(`Channel with ID ${CHANNEL_ID} not found.`);
+                }
+            } catch (error) {
+                console.error(`Error fetching channel: ${error}`);
+            }
         }
         daysMissed = 0;
     }
 });
 
-function checkUserActivity() {
+async function checkUserActivity() {
 
     const guild = client.guilds.cache.get('987760673197027377'); 
     const targetUser = guild.members.cache.get(TARGET_USER_ID);

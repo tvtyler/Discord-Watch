@@ -20,11 +20,11 @@ let daysMissed = 0;
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
-    // // Schedule a job to run every day at 5 PM UTC (equivalent to noon Eastern Time during standard time)
-    // schedule.scheduleJob('0 17 * * *', checkUserActivity);
+    // Schedule a job to run every day at 5 PM UTC (equivalent to noon Eastern Time during standard time)
+    schedule.scheduleJob('0 17 * * *', checkUserActivity);
 
     // debugging
-    schedule.scheduleJob('* * * * *', checkUserActivity);
+    // schedule.scheduleJob('* * * * *', checkUserActivity);
 });
 
 client.on('voiceStateUpdate', (oldState, newState) => {

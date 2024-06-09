@@ -20,7 +20,7 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
     // Schedule a job to run every day at 3 AM UTC (10 PM Eastern Time during standard time)
-    schedule.scheduleJob('0 3 * * *', checkUserActivity);
+    schedule.scheduleJob('* * * * *', checkUserActivity);
 });
 
 client.on('voiceStateUpdate', (oldState, newState) => {

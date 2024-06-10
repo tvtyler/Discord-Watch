@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-const { Client, GatewayIntentBits, Intents } = require('discord.js');
+const { Client, GatewayIntentBits } = require('discord.js');
 const schedule = require('node-schedule');
 
 dotenv.config();
@@ -9,7 +9,7 @@ const client = new Client({
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
-        Intents.FLAGS.GUILD_VOICE_STATES
+        GatewayIntentBits.GuildVoiceStates
     ]
 });
 
@@ -28,18 +28,26 @@ client.on('ready', () => {
 });
 
 client.on('voiceStateUpdate', (oldState, newState) => {
-    // Check if the target user has joined a voice channel
-    if (newState.member.id === TARGET_USER_ID && oldState.channelId === null && newState.channelId !== null) {
-        if (daysMissed > 0) {
-            // Send a message to the channel when daysMissed resets to 0
-            const channel = client.channels.cache.get(CHANNEL_ID);
-            if (channel) {
-                channel.send(`<@${newState.member.id}> is testing bot.`);
-            } else {
-                console.error(`Channel with ID ${CHANNEL_ID} not found.`);
+    console.log(`voiceStateUpdate triggered for user: ${newState.member.id}`);
+    
+    // Listen for target to join a voice channel
+    if (newState.member.id === TARGET_USER_ID) {
+        console.log(`Target user detected in voiceStateUpdate.`);
+        
+        if (!oldState.channelId && newState.channelId) {
+            console.log(`Target user has joined a voice channel.`);
+
+            if (daysMissed > 0) {
+                // Send a message to the channel when daysMissed resets to 0
+                const channel = client.channels.cache.get(CHANNEL_ID);
+                if (channel) {
+                    channel.send(`<@${newState.member.id}> is testing bot.`);
+                } else {
+                    console.error(`Channel with ID ${CHANNEL_ID} not found.`);
+                }
             }
+            daysMissed = 0;
         }
-        daysMissed = 0;
     }
 });
 

@@ -13,14 +13,14 @@ const client = new Client({
     ]
 });
 
-const TARGET_USER_ID = '151778455300734976';
+const TARGET_USER_ID = '694018105701171210';
 const CHANNEL_ID = '1239347161242669136';
 let daysMissed = 0; 
 
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
-    // Schedule a job to run every day at 5 PM UTC
+    // Schedule a job to run every day at noon eastern
     schedule.scheduleJob('0 17 * * *', checkUserActivity);
 
     // debugging
@@ -30,22 +30,21 @@ client.on('ready', () => {
 client.on('voiceStateUpdate', (oldState, newState) => {
     console.log(`voiceStateUpdate triggered for user: ${newState.member.id}`);
     
-    // Listen for target to join a voice channel
+    // Listen for target to join a voice channel and update daysMissed accordingly.
     if (newState.member.id === TARGET_USER_ID) {
-        console.log(`Target user detected in voiceStateUpdate.`);
+        console.log(`Target user detected.`);
         
         if (!oldState.channelId && newState.channelId) {
             console.log(`Target user has joined a voice channel.`);
 
-            
-                // Send a message to the channel when daysMissed resets to 0
+            if (daysMissed > 0) {
                 const channel = client.channels.cache.get(CHANNEL_ID);
                 if (channel) {
-                    channel.send(`<@${newState.member.id}> is testing bot. eff u jordan`);
+                    channel.send(`<@${newState.member.id}> has decided you are worth his time. Maybe you'll be hardcore this time boys.`);
                 } else {
-                    console.error(`Channel with ID ${CHANNEL_ID} not found.`);
+                    console.log(`Channel with ID ${CHANNEL_ID} not found.`);
                 }
-            
+            }
             daysMissed = 0;
         }
     }
@@ -54,22 +53,8 @@ client.on('voiceStateUpdate', (oldState, newState) => {
 async function checkUserActivity() {
     try {
         const guild = client.guilds.cache.get('987760673197027377'); 
-        if (!guild) {
-            console.error(`Guild with ID '987760673197027377' not found.`);
-            return;
-        }
-
         const targetUser = await guild.members.fetch(TARGET_USER_ID);
-        if (!targetUser) {
-            console.error(`User with ID ${TARGET_USER_ID} not found.`);
-            return;
-        }
-
         const channel = client.channels.cache.get(CHANNEL_ID);
-        if (!channel) {
-            console.error(`Channel with ID ${CHANNEL_ID} not found.`);
-            return;
-        }
 
         // Check if the user is in a voice channel
         if (targetUser.voice.channelId) {
@@ -80,6 +65,7 @@ async function checkUserActivity() {
         }
     } catch (error) {
         console.error('Error checking user activity:', error);
+        console.log("Error:", error);
     }
 }
 

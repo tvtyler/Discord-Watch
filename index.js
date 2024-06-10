@@ -1,5 +1,5 @@
 const dotenv = require('dotenv');
-const { Client, GatewayIntentBits } = require('discord.js');
+const { Client, GatewayIntentBits, Intents } = require('discord.js');
 const schedule = require('node-schedule');
 
 dotenv.config();
@@ -9,7 +9,7 @@ const client = new Client({
         GatewayIntentBits.Guilds,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildVoiceStates,
+        Intents.FLAGS.GUILD_VOICE_STATES
     ]
 });
 

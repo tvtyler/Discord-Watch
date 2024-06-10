@@ -21,7 +21,7 @@ client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
     // Schedule a job to run every day at noon eastern
-    schedule.scheduleJob('0 17 * * *', checkUserActivity);
+    schedule.scheduleJob('0 23 * * *', checkUserActivity);
 
     // debugging
     // schedule.scheduleJob('* * * * *', checkUserActivity);

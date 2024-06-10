@@ -37,15 +37,15 @@ client.on('voiceStateUpdate', (oldState, newState) => {
         if (!oldState.channelId && newState.channelId) {
             console.log(`Target user has joined a voice channel.`);
 
-            if (daysMissed > 0) {
+            
                 // Send a message to the channel when daysMissed resets to 0
                 const channel = client.channels.cache.get(CHANNEL_ID);
                 if (channel) {
-                    channel.send(`<@${newState.member.id}> is testing bot.`);
+                    channel.send(`<@${newState.member.id}> is testing bot. eff u jordan`);
                 } else {
                     console.error(`Channel with ID ${CHANNEL_ID} not found.`);
                 }
-            }
+            
             daysMissed = 0;
         }
     }

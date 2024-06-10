@@ -20,7 +20,7 @@ let daysMissed = 0;
 client.on('ready', () => {
     console.log(`Logged in as ${client.user.tag}!`);
 
-    // Schedule a job to run every day at 5 PM UTC (equivalent to noon Eastern Time during standard time)
+    // Schedule a job to run every day at 5 PM UTC
     schedule.scheduleJob('0 17 * * *', checkUserActivity);
 
     // debugging
@@ -33,25 +33,45 @@ client.on('voiceStateUpdate', (oldState, newState) => {
         if (daysMissed > 0) {
             // Send a message to the channel when daysMissed resets to 0
             const channel = client.channels.cache.get(CHANNEL_ID);
-            channel.send(`<@${newState.member.id}> is testing bot. Fk you jordan..`);
+            if (channel) {
+                channel.send(`<@${newState.member.id}> is testing bot.`);
+            } else {
+                console.error(`Channel with ID ${CHANNEL_ID} not found.`);
+            }
         }
         daysMissed = 0;
     }
 });
 
-function checkUserActivity() {
+async function checkUserActivity() {
+    try {
+        const guild = client.guilds.cache.get('987760673197027377'); 
+        if (!guild) {
+            console.error(`Guild with ID '987760673197027377' not found.`);
+            return;
+        }
 
-    const guild = client.guilds.cache.get('987760673197027377'); 
-    const targetUser = guild.members.cache.get(TARGET_USER_ID);
+        const targetUser = await guild.members.fetch(TARGET_USER_ID);
+        if (!targetUser) {
+            console.error(`User with ID ${TARGET_USER_ID} not found.`);
+            return;
+        }
 
-    // Check if the user is in a voice channel
-    if (targetUser.voice.channelId) {
         const channel = client.channels.cache.get(CHANNEL_ID);
-        channel.send(`<@${targetUser.user.id}> is currently in a voice channel. No days missed. Cho would be proud.`);
-    } else {
-        daysMissed++;
-        const channel = client.channels.cache.get(CHANNEL_ID);
-        channel.send(`<@${targetUser.user.id}> hasn't gamed with the homies for ${daysMissed} day(s). :(`);
+        if (!channel) {
+            console.error(`Channel with ID ${CHANNEL_ID} not found.`);
+            return;
+        }
+
+        // Check if the user is in a voice channel
+        if (targetUser.voice.channelId) {
+            channel.send(`<@${targetUser.user.id}> is currently in a voice channel. No days missed. Cho would be proud.`);
+        } else {
+            daysMissed++;
+            channel.send(`<@${targetUser.user.id}> hasn't gamed with the homies for ${daysMissed} day(s). :(`);
+        }
+    } catch (error) {
+        console.error('Error checking user activity:', error);
     }
 }
 

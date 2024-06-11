@@ -18,7 +18,7 @@ const CHANNEL_ID = '1239347161242669136';
 let daysMissed = 0; 
 
 client.on('ready', () => {
-    console.log(`Logged in as ${client.user.tag}!`);
+    console.log(`Logged in as ${client.user.tag}`);
 
     // Schedule a job to run every day at noon eastern
     schedule.scheduleJob('0 17 * * *', checkUserActivity);
@@ -32,23 +32,33 @@ client.on('voiceStateUpdate', (oldState, newState) => {
     
     // Listen for target to join a voice channel and update daysMissed accordingly.
     if (newState.member.id === TARGET_USER_ID) {
-        console.log(`Target user detected.`);
         
         if (!oldState.channelId && newState.channelId) {
-            console.log(`Target user has joined a voice channel.`);
+            const voiceChannel = client.channels.cache.get(newState.channelId);
+            const textChannel = client.channels.cache.get(CHANNEL_ID);
 
-            if (daysMissed > 0) {
-                const channel = client.channels.cache.get(CHANNEL_ID);
-                if (channel) {
-                    channel.send(`<@${newState.member.id}> has decided you are worth his time. Maybe you'll be hardcore this time boys.`);
-                } else {
-                    console.log(`Channel with ID ${CHANNEL_ID} not found.`);
-                }
+            if (voiceChannel && voiceChannel.members.size > 1) {
+                textChannel.send(`<@${newState.member.id}> has decided you are worth his time. Maybe you'll beat hardcore this time lads.`);
+                daysMissed = 0;
+            } else {
+                textChannel.send(`<@${newState.member.id}> has joined a voice channel alone.`);
             }
-            daysMissed = 0;
+        }
+    } else {
+        // Listen for anyone else joining the target user's channel
+        const targetUser = oldState.guild.members.cache.get(TARGET_USER_ID);
+        const voiceChannel = targetUser ? client.channels.cache.get(targetUser.voice.channelId) : null;
+        const textChannel = client.channels.cache.get(CHANNEL_ID);
+
+        if (voiceChannel && targetUser && targetUser.voice.channelId === newState.channelId && newState.channelId !== null) {
+            if (voiceChannel.members.size == 2) {
+                textChannel.send(`<@${newState.member.id}> has joined <@${TARGET_USER_ID}>'s channel. Days missed has been reset.`);
+                daysMissed = 0;
+            }
         }
     }
 });
+
 
 async function checkUserActivity() {
     try {
@@ -58,7 +68,7 @@ async function checkUserActivity() {
 
         // Check if the user is in a voice channel
         if (targetUser.voice.channelId) {
-            channel.send(`<@${targetUser.user.id}> is currently in a voice channel. No days missed. Cho would be proud.`);
+            channel.send(`<@${targetUser.user.id}> is currently in a voice channel. Cho would be proud.`);
         } else {
             daysMissed++;
             channel.send(`<@${targetUser.user.id}> hasn't gamed with the homies for ${daysMissed} day(s). :(`);
